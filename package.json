@@ -3,8 +3,7 @@
   "description": "Shared Bunup-based TypeScript configurations with DOM, library, and opt-in React presets",
   "version": "2.0.0",
   "scripts": {
-    "release": "bunx --bun bumpp --git-check --execute \"bun run release:check\"",
-    "release:check": "bun install --frozen-lockfile && bun pm pack --dry-run --ignore-scripts"
+    "release": "bumpp --commit --push --tag"
   },
   "devDependencies": {
     "bumpp": "^12.3.0"

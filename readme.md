@@ -156,18 +156,18 @@ versioning, and packing; npm is used only for its supported OIDC publishing flow
 4. From a clean working tree, run:
 
    ```sh
-   bun run release
+   bun run --bun release
    # Or choose the bump explicitly (still asks for confirmation):
-   bun run release --release patch
+   bun run --bun release --release patch
    ```
 
-The release script runs Bumpp under Bun, checks Git status, and lets you select
-and confirm the next version. It updates `package.json`, runs a frozen Bun install
-and package dry run via `bun run release:check`, then commits, tags `v<version>`,
-and pushes. The Bun lockfile has no root package version to update. The explicit
-Bun check keeps installation frozen instead of using Bumpp's `--install` option.
-Commit release notes before running Bumpp; it commits the version change, not
-unrelated files.
+The release script invokes the locally installed Bumpp executable. The `--bun`
+flag on `bun run` keeps it running under Bun rather than its Node shebang.
+Bumpp lets you select and confirm the next version, updates `package.json`, then
+commits, tags `v<version>`, and pushes. The Bun lockfile has no root package version
+to update. Installation and package inspection are the separate steps above, not
+part of the release script. Commit release notes before running Bumpp; it commits
+the version change, not unrelated files.
 
 Pushing a `v*` tag triggers `.github/workflows/release.yml`. The workflow requires
 a stable `vX.Y.Z` tag matching `package.json`; prereleases are rejected rather

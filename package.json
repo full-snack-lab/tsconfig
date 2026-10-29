@@ -1,7 +1,7 @@
 {
   "name": "@fullsnacklab/tsconfig",
   "description": "Shared typeScript configurations with DOM, library, and opt-in React presets",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "scripts": {
     "release": "bunx bumpp --commit --push --tag"
   },

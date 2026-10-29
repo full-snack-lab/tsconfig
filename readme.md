@@ -156,13 +156,12 @@ versioning, and packing; npm is used only for its supported OIDC publishing flow
 4. From a clean working tree, run:
 
    ```sh
-   bun run --bun release
+   bun run release
    # Or choose the bump explicitly (still asks for confirmation):
-   bun run --bun release --release patch
+   bun run release --release patch
    ```
 
-The release script invokes the locally installed Bumpp executable. The `--bun`
-flag on `bun run` keeps it running under Bun rather than its Node shebang.
+The release script invokes the locally installed Bumpp executable.
 Bumpp lets you select and confirm the next version, updates `package.json`, then
 commits, tags `v<version>`, and pushes. The Bun lockfile has no root package version
 to update. Installation and package inspection are the separate steps above, not

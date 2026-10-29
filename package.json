@@ -1,7 +1,7 @@
 {
   "name": "@fullsnacklab/tsconfig",
   "description": "Shared typeScript configurations with DOM, library, and opt-in React presets",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "scripts": {
     "release": "bumpp --commit --push --tag"
   },
@@ -40,8 +40,5 @@
   "packageManager": "bun@1.4.3",
   "publishConfig": {
     "access": "public"
-  },
-  "dependencies": {
-    "@fullsnacklab/tsconfig": "."
   }
 }

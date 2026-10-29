@@ -1,13 +1,12 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
 	"compilerOptions": {
-		
+
 		"lib": ["ESNext", "DOM"],
 		"target": "ES2023",
 		"module": "Preserve",
 		"moduleDetection": "force",
-		"jsx": "react-jsx",
-		
-		
+
 		"moduleResolution": "bundler",
 		"allowImportingTsExtensions": true,
 		"verbatimModuleSyntax": true,
@@ -18,7 +17,7 @@
 		"noFallthroughCasesInSwitch": true,
 		"noUncheckedIndexedAccess": true,
 		"noImplicitOverride": true,
-
+		"types": ["bun"],
 		"declaration": true,
 		"isolatedDeclarations": true,
 
@@ -27,5 +26,6 @@
 		"noPropertyAccessFromIndexSignature": false
 	},
 
-	"exclude": ["node_modules", "dist"]
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "dist", "bunup.config.ts"]
 }

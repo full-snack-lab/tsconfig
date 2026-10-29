@@ -1,1 +1,14 @@
 node_modules
+.env*
+.envrc
+.DS_Store
+.infisical
+.infisical-cache/
+.pyenv/
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.npm/
+.yarn/unplugged/
+.pnpm-store/

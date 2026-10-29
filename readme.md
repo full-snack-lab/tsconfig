@@ -1,44 +1,102 @@
-# `@fullsnacklab/tsconfig`
+# @fullsnacklab/tsconfig
 
-`tsconfig.json` comes down to a few decisions: whether the project runs in the DOM with React, and whether it is an app, a library, or a package in a monorepo.
+Small, shared TypeScript presets based on [Bunup templates](https://github.com/bunup/templates).
+DOM support, library declarations, and React are explicit choices.
 
-## Setup
+```text
+shared/
+  base.json
+dom/
+  app.json
+  library.json
+  react.json
+no-dom/
+  library.json
+```
 
-1. Install:
+## Install
 
-```bash
+```sh
 bun add --dev @fullsnacklab/tsconfig
 ```
 
-2. Choose a config from the [list](#list-of-tsconfigs) below.
+## Choose a preset
 
-3. Add it to your `tsconfig.json`:
+| Preset | Purpose |
+| --- | --- |
+| `shared/base.json` | Shared compiler settings with ESNext libraries, without DOM or JSX |
+| `dom/app.json` | Browser apps, without declaration requirements or React assumptions |
+| `dom/library.json` | Browser libraries, with declaration and isolated-declaration settings |
+| `no-dom/library.json` | Non-browser libraries, with declaration and isolated-declaration settings |
+| `dom/react.json` | Opt-in automatic React JSX; adds neither DOM nor library settings |
 
-```jsonc
+The base-derived presets use ES2023 output targeting, Preserve modules, bundler resolution,
+strict checking, and `noEmit`. The ESNext library choice follows the Bunup
+monorepo template; it describes available types, not runtime polyfills.
+Bunup owns library output and declaration generation.
+
+### Non-browser library
+
+```json
 {
-  // React app
-  "extends": "@fullsnacklab/tsconfig/dom/app"
+  "extends": "@fullsnacklab/tsconfig/no-dom/library.json",
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
 ```
 
-Please don't use `tsc`. Instead, use `bun check` or `bun run build --check` in your projects.
+### Browser app
 
-## List of TSConfigs
-
-### React
-
-These configs are for projects that run in the DOM with React. They set `"jsx": "react-jsx"`.
-
-```jsonc
+```json
 {
-  "extends": "@fullsnacklab/tsconfig/dom/app", // React app
-  "extends": "@fullsnacklab/tsconfig/dom/library", // React library
-  "extends": "@fullsnacklab/tsconfig/dom/monorepo/base", // Shared base for a React monorepo
-  "extends": "@fullsnacklab/tsconfig/dom/monorepo/tsconfig" // Package in a React monorepo
+  "extends": "@fullsnacklab/tsconfig/dom/app.json",
+  "include": ["src/**/*"]
 }
 ```
 
-In a monorepo, the root `tsconfig.base.json` extends `dom/monorepo/base`. Each package extends that base:
+### React component library
+
+```json
+{
+  "extends": [
+    "@fullsnacklab/tsconfig/dom/library.json",
+    "@fullsnacklab/tsconfig/dom/react.json"
+  ],
+  "include": ["src/**/*"]
+}
+```
+
+Install React and its types in the consuming project. The React overlay supplies
+only `jsx: react-jsx`. Vite, Astro, React Router, and other framework-specific
+configuration and generated types remain owned by the project. Keep any required
+framework config inheritance when adding these presets.
+
+## Monorepos: extend your workspace root
+
+Use the same presets, following the Bunup template's local inheritance pattern.
+There is no separate published monorepo preset.
+
+```text
+my-workspace/
+├── tsconfig.base.json
+└── packages/
+    └── my-library/
+        ├── tsconfig.json
+        └── src/
+```
+
+Workspace `tsconfig.base.json`:
+
+```json
+{
+  "extends": "@fullsnacklab/tsconfig/dom/app.json"
+}
+```
+
+Use `shared/base.json` instead for a non-DOM workspace. Choose React at the workspace
+root only when it is shared policy; otherwise opt in at individual packages.
+
+`packages/my-library/tsconfig.json`:
 
 ```json
 {
@@ -47,58 +105,60 @@ In a monorepo, the root `tsconfig.base.json` extends `dom/monorepo/base`. Each p
     "declaration": true,
     "isolatedDeclarations": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
 ```
 
-### No DOM
+An app can inherit the root without adding declaration settings. An `app/`
+directory directly beneath the workspace root uses `../tsconfig.base.json`.
 
-These configs are for projects that do not run in the DOM, such as Node.js.
+## Consumer-owned settings
 
-```jsonc
-{
-  "extends": "@fullsnacklab/tsconfig/no-dom/library", // Library
-  "extends": "@fullsnacklab/tsconfig/no-dom/monorepo/base", // Shared base for a monorepo
-  "extends": "@fullsnacklab/tsconfig/no-dom/monorepo/tsconfig" // Package in a monorepo
-}
+Keep source globs, output paths, aliases, ambient `types`, and project references
+in the consumer. Relative paths resolve from the config that defines them.
+In an `extends` array, later configs win conflicts; local compiler options win
+last. Arrays such as `lib` and `types` replace inherited arrays.
+
+The common base omits DOM libraries explicitly. Consumers can still introduce
+browser globals through dependencies or ambient types; choose those deliberately.
+
+Check your project with:
+
+```sh
+bun check
 ```
 
-In a monorepo, the root `tsconfig.base.json` extends `no-dom/monorepo/base`. Each package extends that base:
+## Maintaining this package
 
-```json
-{
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "declaration": true,
-    "isolatedDeclarations": true
-  },
-  "include": ["src/**/*"]
-}
-```
+These presets use TypeScript's conventional `.json` filenames with JSONC comments.
+Package-name `extends` resolves these paths. Comments explain intentional policy;
+use a JSONC-aware reader rather than `JSON.parse`. No build step is needed.
 
-## Options Not Covered
+The manifest exports `.json` paths and extensionless aliases for the supported
+presets. Monorepos use the local-root inheritance pattern above. Consumers of the
+former monorepo exports must migrate to that pattern before upgrading.
+Removing the former paths requires a **major release**, not another `1.x` release.
+Consumers need a compiler supporting `module: Preserve`, array `extends`, and
+`isolatedDeclarations` (TypeScript 5.5 or newer). Consumer checks here use Bun 1.4.3's
+native `bun check`; do not shadow it with a package script named `check`.
 
-### `jsx`
+### Release gate
 
-The React configs already set `jsx`. Override it when a project needs a different mode:
+Use Bun 1.4.3 (`bun install --frozen-lockfile`) and retain Changesets for versioning.
+CI inspects the package with `bun pm pack --dry-run --ignore-scripts` without publishing.
+Before release, record the major Changeset/version, install the actual tarball in
+clean consumers, and review its contents and SHA-256 digest.
 
-```json
-{
-  "extends": "@fullsnacklab/tsconfig/dom/app",
-  "compilerOptions": {
-    "jsx": "react-jsx"
-  }
-}
-```
+npm trusted publishing is **not registered** for this repository. The manual
+`release.yml` is disabled unless `NPM_TRUSTED_PUBLISHING_ENABLED` is set to `true`,
+and separately rejects versions below `2.0.0`. Only enable it after registering
+the npm trusted publisher for this repository and workflow and approving the release.
+It uses Bun to install/pack and Node 24's npm CLI for OIDC publishing; no npm token
+is required. No publication or consumer migration has been performed.
 
-### Framework-Specific Options
+## Acknowledgments
 
-Framework-specific options, such as those for Vite, Next, Remix, and Astro, are left to the project.
-
-## Why Not Use `@tsconfig/bases`?
-
-[`@tsconfig/bases`](https://github.com/tsconfig/bases) is a useful set of TypeScript configurations. This package keeps a smaller set of choices so the configs can stay aligned with the projects that use them.
-
-## Acknowledgment
-
-This package is based on Matt Pocock's [`@total-typescript/tsconfig`](https://github.com/total-typescript/tsconfig) and the TSConfig Cheat Sheet.
+Compiler policy follows [Bunup templates](https://github.com/bunup/templates).
+Earlier scaffolding drew on Matt Pocock's
+[Total TypeScript tsconfig](https://github.com/total-typescript/tsconfig).

@@ -1,23 +1,40 @@
 {
   "name": "@fullsnacklab/tsconfig",
-  "description": "A collection of TypeScript configurations, based on Total TypeScript's TSConfig Cheat Sheet",
-  "version": "1.0.4",
+  "description": "Shared Bunup-based TypeScript configurations with DOM, library, and opt-in React presets",
+  "version": "2.0.0",
   "devDependencies": {
     "@changesets/cli": "^2.27.1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fullsnacklab/tsconfig.git"
+    "url": "https://github.com/full-snack-lab/tsconfig.git"
   },
-  "author": {"name": "Jordan Sweeting", "email": "jordan@fullsnacklab.com", "url": "https://fullsnacklab.com"},
+  "author": {
+    "name": "Jordan Sweeting",
+    "email": "jordan@fullsnacklab.com",
+    "url": "https://fullsnacklab.com"
+  },
   "license": "MIT",
+  "files": [
+    "package.json",
+    "dom",
+    "no-dom"
+  ],
   "exports": {
-    "./no-dom/library": "./no-dom/library.json",
-    "./no-dom/monorepo/base": "./no-dom/monorepo/base.json",
-    "./no-dom/monorepo/tsconfig": "./no-dom/monorepo/tsconfig.json",
+    "./package.json": "./package.json",
+    "./dom": "./dom/base.json",
     "./dom/app": "./dom/app.json",
     "./dom/library": "./dom/library.json",
-    "./dom/monorepo/base": "./dom/monorepo/base.json",
-    "./dom/monorepo/tsconfig": "./dom/monorepo/tsconfig.json"
+    "./dom/extends/app": "./dom/extends/app/base.json",
+    "./dom/extends/library": "./dom/extends/library/base.json",
+    "./no-dom": "./no-dom/base.json",
+    "./no-dom/library": "./no-dom/library.json",
+    "./no-dom/app": "./no-dom/app.json",
+    "./no-dom/extends/app": "./no-dom/extends/app/base.json",
+    "./no-dom/extends/library": "./no-dom/extends/library/base.json"
+  },
+  "packageManager": "bun@1.4.3",
+  "publishConfig": {
+    "access": "public"
   }
 }

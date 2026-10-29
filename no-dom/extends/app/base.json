@@ -1,5 +1,5 @@
 {
-	"extends": "./base.json",
+	"extends": "../../app.json",
 	"compilerOptions": { "declaration": true, "isolatedDeclarations": true },
 	"include": ["src/**/*"]
 }

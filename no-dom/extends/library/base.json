@@ -1,5 +1,5 @@
 {
-	"extends": "../../tsconfig.base.json",
+	"extends": "../../library.json",
 	"compilerOptions": { "declaration": true, "isolatedDeclarations": true },
 	"include": ["src/**/*"]
 }

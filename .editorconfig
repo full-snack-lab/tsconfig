@@ -1,0 +1,17 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Structured configuration uses two spaces; TS/JS config files remain code.
+[*.{json,jsonc,yaml,yml,toml}]
+indent_size = 2
+
+# Preserve Markdown's intentional two-space hard line breaks.
+[*.{md,mdx}]
+trim_trailing_whitespace = false

@@ -1,7 +1,7 @@
 {
   "name": "@fullsnacklab/tsconfig",
-  "description": "Shared Bunup-based TypeScript configurations with DOM, library, and opt-in React presets",
-  "version": "2.0.0",
+  "description": "Shared typeScript configurations with DOM, library, and opt-in React presets",
+  "version": "2.0.1",
   "scripts": {
     "release": "bumpp --commit --push --tag"
   },

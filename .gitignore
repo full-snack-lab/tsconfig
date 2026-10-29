@@ -1,8 +1,11 @@
 node_modules
-.env*
-.envrc
+.env
+.env.*
+!.env.example
+!.env.dev.example
+!.env.prod.example
+!.env.local.example
 .DS_Store
-.infisical
 .infisical-cache/
 .pyenv/
 node_modules/
@@ -12,3 +15,5 @@ coverage/
 .npm/
 .yarn/unplugged/
 .pnpm-store/
+.direnv/
+.envrc.local

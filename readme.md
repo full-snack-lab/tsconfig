@@ -143,19 +143,46 @@ Consumers need a compiler supporting `module: Preserve`, array `extends`, and
 `isolatedDeclarations` (TypeScript 5.5 or newer). Consumer checks here use Bun 1.4.3's
 native `bun check`; do not shadow it with a package script named `check`.
 
-### Release gate
+### Releasing with Bumpp
 
-Use Bun 1.4.3 (`bun install --frozen-lockfile`) and retain Changesets for versioning.
-CI inspects the package with `bun pm pack --dry-run --ignore-scripts` without publishing.
-Before release, record the major Changeset/version, install the actual tarball in
-clean consumers, and review its contents and SHA-256 digest.
+`2.0.0` is already published on npm. Use Bun 1.4.3 for dependency installation,
+versioning, and packing; npm is used only for its supported OIDC publishing flow.
 
-npm trusted publishing is **not registered** for this repository. The manual
-`release.yml` is disabled unless `NPM_TRUSTED_PUBLISHING_ENABLED` is set to `true`,
-and separately rejects versions below `2.0.0`. Only enable it after registering
-the npm trusted publisher for this repository and workflow and approving the release.
-It uses Bun to install/pack and Node 24's npm CLI for OIDC publishing; no npm token
-is required. No publication or consumer migration has been performed.
+1. On an up-to-date `main`, install with `bun install --frozen-lockfile`.
+2. Update `CHANGELOG.md` with the next version's release notes and commit your
+   changes. Bumpp does not generate changelogs; no Changeset files are needed.
+3. Review the package contents with `bun pm pack --dry-run --ignore-scripts`.
+   For preset changes, install the actual tarball in clean consumers before release.
+4. From a clean working tree, run:
+
+   ```sh
+   bun run release
+   # Or choose the bump explicitly (still asks for confirmation):
+   bun run release --release patch
+   ```
+
+The release script runs Bumpp under Bun, checks Git status, and lets you select
+and confirm the next version. It updates `package.json`, runs a frozen Bun install
+and package dry run via `bun run release:check`, then commits, tags `v<version>`,
+and pushes. The Bun lockfile has no root package version to update. The explicit
+Bun check keeps installation frozen instead of using Bumpp's `--install` option.
+Commit release notes before running Bumpp; it commits the version change, not
+unrelated files.
+
+Pushing a `v*` tag triggers `.github/workflows/release.yml`. The workflow requires
+a stable `vX.Y.Z` tag matching `package.json`; prereleases are rejected rather
+than published as `latest`. To retry a release manually, dispatch the workflow
+against the existing version tag, not `main`. Never reuse an npm version or move
+a published tag.
+
+Publishing remains gated by the repository variable
+`NPM_TRUSTED_PUBLISHING_ENABLED=true`. Before enabling it, register the npm trusted
+publisher for `@fullsnacklab/tsconfig` with owner `full-snack-lab`, repository
+`tsconfig`, and workflow filename `release.yml`. Bun installs and packs the exact
+tarball, and CI records its SHA-256 digest and uploads it as a release artifact.
+Node 24's npm CLI inspects that tarball with `npm publish --dry-run`, then publishes
+it using GitHub Actions OIDC; no npm token is required. A skipped publish job
+means the opt-in variable is not enabled, not that a package was published.
 
 ## Acknowledgments
 

@@ -1,7 +1,7 @@
 {
   "name": "@fullsnacklab/tsconfig",
   "description": "Shared typeScript configurations with DOM, library, and opt-in React presets",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "scripts": {
     "release": "bumpp --commit --push --tag"
   },
@@ -24,6 +24,7 @@
     "no-dom"
   ],
   "exports": {
+    ".": "./base.json",
     "./package.json": "./package.json",
     "./dom": "./dom/base.json",
     "./dom/app": "./dom/app.json",

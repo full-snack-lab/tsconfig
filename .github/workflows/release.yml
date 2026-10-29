@@ -14,7 +14,10 @@ permissions:
   id-token: write
 
 jobs:
-  release:
+  publish:
+    permissions:
+      contents: read
+      id-token: write
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -30,3 +33,6 @@ jobs:
         run: bunx changelogithub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish packages to npm
+        run: bun pm pack && npm publish ./*.tgz --access public
